@@ -4,10 +4,10 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { SettingService } from '@/shared/services/setting.service';
 import { ISwaggerConfigInterface } from '@/interfaces/swagger.interface';
-import { NestApplication } from '@nestjs/core';
+import { INestApplication } from '@nestjs/common';
 
 export function setupSwagger(
-  app: NestApplication,
+  app: INestApplication,
   config: ISwaggerConfigInterface,
 ) {
   const configService = new SettingService();

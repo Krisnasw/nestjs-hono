@@ -6,14 +6,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TerminusModule } from '@nestjs/terminus';
 import { ScheduleModule as CronModule } from '@nestjs/schedule';
-import { TRPCModule } from 'nestjs-trpc';
+import { ResilienceModule } from 'nestjs-resilience';
 
 import { SettingService } from './shared/services/setting.service';
 import { RequestContextModule } from '@medibloc/nestjs-request-context';
 import { AbstractRequestContext } from './common/contexts/abstract-request.context';
 import { SharedModule } from './shared/shared.module';
 import { HelloModule } from './modules/hello/hello.module';
-import { TrpcPanelController } from './shared/trpc-panel/trpc-panel.controller';
+import { HealthModule } from './modules/health/health.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -37,16 +38,16 @@ import { TrpcPanelController } from './shared/trpc-panel/trpc-panel.controller';
       contextClass: AbstractRequestContext,
       isGlobal: true,
     }),
+    ResilienceModule.forRoot({}),
     EventEmitterModule.forRoot(),
     CronModule.forRoot(),
-    TRPCModule.forRoot({
-      autoSchemaFile: './src/@generated',
-    }),
     TerminusModule,
     SharedModule,
     HelloModule,
+    HealthModule,
+    AuthModule,
   ],
-  controllers: [AppController, TrpcPanelController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

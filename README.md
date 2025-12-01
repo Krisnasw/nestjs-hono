@@ -1,99 +1,216 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS DDD Boilerplate
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A modern NestJS boilerplate with Hono, Drizzle ORM, and Bun runtime.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Features
 
-## Description
+- **Bun Runtime**: Ultra-fast JavaScript runtime and package manager
+- **Hono Adapter**: High-performance HTTP server (3x faster than Express)
+- **Drizzle ORM**: Type-safe SQL with MySQL support
+- **RabbitMQ**: Message queue with automatic reconnection and resilience
+- **Redis**: Caching and session management
+- **TRPC**: End-to-end typesafe APIs
+- **Swagger**: API documentation
+- **JWT Authentication**: Secure authentication
+- **Validation**: Class-validator and class-transformer
+- **Logging**: Pino logger with pretty printing
+- **Testing**: Jest for unit and e2e tests
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📋 Prerequisites
 
-## Project setup
+- [Bun](https://bun.sh) >= 1.0.0
+- MySQL >= 8.0
+- Redis (optional)
+- RabbitMQ (optional)
+
+## 🛠️ Installation
 
 ```bash
-$ pnpm install
+# Install Bun (if not already installed)
+curl -fsSL https://bun.sh/install | bash
+
+# Install dependencies
+bun install
+
+# Copy environment variables
+cp .env.example .env
+
+# Edit .env with your configuration
 ```
 
-## Compile and run the project
+## 🗄️ Database Setup
 
 ```bash
-# development
-$ pnpm run start
+# Create database
+mysql -u root -p -e "CREATE DATABASE boilerplate;"
 
-# watch mode
-$ pnpm run start:dev
+# Push schema to database
+bun run db:push
 
-# production mode
-$ pnpm run start:prod
+# Or generate and run migrations
+bun run db:generate
+bun run db:migrate
+
+# Open Drizzle Studio (database GUI)
+bun run db:studio
 ```
 
-## Run tests
+## 🏃 Running the Application
 
 ```bash
-# unit tests
-$ pnpm run test
+# Development mode with hot reload
+bun run start:dev
 
-# e2e tests
-$ pnpm run test:e2e
+# Production build
+bun run build
 
-# test coverage
-$ pnpm run test:cov
+# Production mode
+bun run start:prod
+
+# Debug mode
+bun run start:debug
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🧪 Testing
 
 ```bash
-$ pnpm install -g mau
-$ mau deploy
+# Unit tests
+bun run test
+
+# E2E tests
+bun run test:e2e
+
+# Test coverage
+bun run test:cov
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 📁 Project Structure
 
-## Resources
+```
+src/
+├── common/          # Common utilities and contexts
+├── exceptions/      # Custom exceptions
+├── filters/         # Exception filters
+├── interceptors/    # Custom interceptors
+├── interfaces/      # TypeScript interfaces
+├── modules/         # Feature modules
+│   └── hello/       # Example module
+├── shared/          # Shared services (global)
+│   ├── database/    # Drizzle ORM setup
+│   ├── rabbitmq/    # RabbitMQ service
+│   ├── redis/       # Redis service
+│   ├── services/    # Shared services
+│   ├── swagger/     # Swagger configuration
+│   └── utils/       # Utility functions
+├── app.module.ts    # Root module
+└── main.ts          # Application entry point
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🔧 Configuration
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+All configuration is done via environment variables. See `.env.example` for available options.
 
-## Support
+### Database (MySQL)
+```env
+DATABASE_URL=mysql://root:@localhost:3306/boilerplate
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Redis
+```env
+REDIS_URL=redis://localhost:6379
+REDIS_PREFIX=boilerplate:
+```
 
-## Stay in touch
+### RabbitMQ
+```env
+RABBITMQ_URL=amqp://guest:guest@localhost:5672
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 📚 Usage Examples
 
-## License
+### Database (Drizzle ORM)
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```typescript
+import { DatabaseService } from './shared/database';
+import { users } from './shared/database/schema';
+import { eq } from 'drizzle-orm';
+
+@Injectable()
+export class UserService {
+  constructor(private db: DatabaseService) {}
+
+  async findUser(id: number) {
+    const [user] = await this.db.db
+      .select()
+      .from(users)
+      .where(eq(users.id, id));
+    return user;
+  }
+}
+```
+
+### Redis
+
+```typescript
+import { RedisService } from './shared/redis';
+
+@Injectable()
+export class CacheService {
+  constructor(private redis: RedisService) {}
+
+  async cacheData(key: string, data: any, ttl = 3600) {
+    await this.redis.set(key, JSON.stringify(data), ttl);
+  }
+}
+```
+
+### RabbitMQ
+
+```typescript
+import { RabbitMQResilientService } from './shared/rabbitmq';
+
+@Injectable()
+export class EventService {
+  constructor(private rabbitmq: RabbitMQResilientService) {}
+
+  async publishEvent(event: any) {
+    await this.rabbitmq.publishWithResilience(
+      'events',
+      'user.created',
+      event
+    );
+  }
+}
+```
+
+## 📖 Documentation
+
+- [Migration Guide](./MIGRATION_GUIDE.md) - Detailed migration information
+- [Shared Services](./src/shared/README.md) - Documentation for shared services
+- [RabbitMQ Module](./src/shared/rabbitmq/README.md) - RabbitMQ usage guide
+
+## 🔄 Migration from Previous Version
+
+This project has been migrated from:
+- npm/pnpm → Bun
+- Express → Hono
+- Prisma → Drizzle ORM
+
+See [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md) for detailed migration steps.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📝 License
+
+This project is [MIT licensed](LICENSE).
+
+## 🙏 Acknowledgments
+
+Built with:
+- [NestJS](https://nestjs.com/)
+- [Bun](https://bun.sh/)
+- [Hono](https://hono.dev/)
+- [Drizzle ORM](https://orm.drizzle.team/)
+- [RabbitMQ Client](https://github.com/cody-greene/node-rabbitmq-client)

@@ -7,7 +7,6 @@ import {
   HttpStatus,
   UseInterceptors,
 } from '@nestjs/common';
-import { Router } from 'nestjs-trpc';
 import { ApiTags } from '@nestjs/swagger';
 import { HelloService } from '../services/hello.service';
 
@@ -15,7 +14,6 @@ import { HelloService } from '../services/hello.service';
 @ApiCustomHeader()
 @UseInterceptors(TransformResponseInterceptor)
 @Controller('hello')
-@Router({ alias: 'hello' })
 export class HelloController {
   constructor(private readonly helloService: HelloService) {}
 
