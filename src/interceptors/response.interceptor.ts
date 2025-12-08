@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   CallHandler,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -49,8 +50,18 @@ export class TransformResponseInterceptor<T> implements NestInterceptor<
         return response;
       }),
       catchError(error => {
-        const statusCode =
-          error?.status || context.switchToHttp().getResponse().statusCode;
+        const httpResponse = context.switchToHttp().getResponse();
+        const fallbackStatus =
+          typeof httpResponse?.status === 'number'
+            ? httpResponse.status
+            : httpResponse?.statusCode;
+        const isValidStatus = (value?: number) =>
+          typeof value === 'number' && value >= 200 && value <= 599;
+        const statusCode = isValidStatus(error?.status)
+          ? error.status
+          : isValidStatus(fallbackStatus)
+            ? fallbackStatus
+            : HttpStatus.INTERNAL_SERVER_ERROR;
         const message = error?.message || 'Something went wrong';
 
         throw new HttpException(

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JwtModule } from '@nestjs/jwt';
@@ -18,15 +17,6 @@ import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
-    LoggerModule.forRoot({
-      pinoHttp: {
-        safe: true,
-        transport:
-          process.env.NODE_ENV !== 'production'
-            ? { target: 'pino-pretty' }
-            : undefined,
-      },
-    }),
     JwtModule.registerAsync({
       global: true,
       useFactory: (settingService: SettingService) => ({

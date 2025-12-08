@@ -1,4 +1,4 @@
-import { NestFactory, Reflector } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SharedModule } from './shared/shared.module';
 import { SettingService } from './shared/services/setting.service';
@@ -12,6 +12,7 @@ import { HonoAdapter } from '@kiyasov/platform-hono';
 import { initializeOtel } from './shared/telemetry/otel';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { setupHonoSwagger } from './shared/swagger/hono-swagger.setup';
+import { ResponseExceptionFilter } from './exceptions/response.exception';
 
 // Initialize OpenTelemetry before anything else
 initializeOtel();
@@ -24,7 +25,8 @@ async function bootstrap() {
   });
 
   const settingService = app.select(SharedModule).get(SettingService);
-  
+  const httpAdapterHost = app.get(HttpAdapterHost);
+
   // Global interceptors
   const globalInterceptors: NestInterceptor[] = [
     new LoggingInterceptor(),
@@ -39,6 +41,7 @@ async function bootstrap() {
   });
 
   app.useGlobalInterceptors(...globalInterceptors);
+  app.useGlobalFilters(new ResponseExceptionFilter(httpAdapterHost));
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

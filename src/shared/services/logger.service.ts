@@ -3,7 +3,6 @@ import * as winston from 'winston';
 
 import { SettingService } from './setting.service';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces/features/arguments-host.interface';
-import { Request, Response } from 'express';
 
 @Injectable()
 export class LoggerService extends ConsoleLogger {
@@ -39,18 +38,18 @@ export class LoggerService extends ConsoleLogger {
 
   formattedError(
     message: string,
-    error,
+    error: unknown,
     meta: {
       httpContext: HttpArgumentsHost;
       errorResponse;
       contextName: string;
     },
   ) {
-    const response = meta.httpContext.getResponse<Response>();
-    const request = meta.httpContext.getRequest<Request>();
+    const response = meta.httpContext.getResponse();
+    const request = meta.httpContext.getRequest();
     const formatted = {
-      headers: request.headers,
-      body: request.body,
+      headers: request?.headers,
+      body: request?.body,
       responseMessage: meta.errorResponse,
       error,
     };

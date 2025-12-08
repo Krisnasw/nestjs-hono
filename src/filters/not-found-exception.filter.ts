@@ -6,28 +6,38 @@ import {
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { HttpAdapterHost } from '@nestjs/core';
+import { randomUUID } from 'crypto';
 
 import { LoggerService } from '../shared/services/logger.service';
 
 @Catch(NotFoundException)
 export class NotFoundExceptionFilter implements ExceptionFilter {
-  constructor(private readonly _logger: LoggerService) {}
+  constructor(
+    private readonly _logger: LoggerService,
+    private readonly httpAdapterHost: HttpAdapterHost,
+  ) {}
 
   catch(_exception: HttpException, host: ArgumentsHost) {
+    const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
-    const message = "Not Found";
+    const response = ctx.getResponse();
+    const request = ctx.getRequest();
+    const message = 'Not Found';
     let code = HttpStatus.INTERNAL_SERVER_ERROR;
-    const statusCode = _exception.getStatus
-      ? _exception.getStatus()
-      : HttpStatus.INTERNAL_SERVER_ERROR;
-    const errorCode =
-      typeof response === 'object' ? (response as any).errorCode : statusCode;
+    const isValidStatus = (value?: number) =>
+      typeof value === 'number' && value >= 200 && value <= 599;
     let detail = (_exception as any).message.message;
 
     if (request) {
+      const requestId = request?.headers?.['x-request-id'] || randomUUID();
+      const platform = request?.headers?.['x-platform'] || 'unknown';
+      const ip =
+        request?.headers?.['x-forwarded-for'] ||
+        request?.headers?.['x-real-ip'] ||
+        request?.ip ||
+        '';
+
       switch (_exception.constructor) {
         case NotFoundException:
           code = HttpStatus.NOT_FOUND;
@@ -37,17 +47,24 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
           code = HttpStatus.INTERNAL_SERVER_ERROR;
       }
 
+      if (!isValidStatus(code)) {
+        code = HttpStatus.INTERNAL_SERVER_ERROR;
+      }
+
       const errorResponse = {
-        status: 'Error',
-        statusCode: _exception.getStatus,
-        errorCode: code,
-        message,
-        detail,
-        payload:
-          typeof response === 'object' ? (response as any).payload : null,
+        success: false,
+        message: detail || message,
+        data: null,
+        meta: {
+          requestId,
+          platform,
+          ip,
+        },
+        errors: detail || message,
       };
 
-      return response.status(code).send(errorResponse);
+      httpAdapter.setHeader(response, 'Content-Type', 'application/json');
+      return httpAdapter.reply(response, errorResponse, code);
     } else {
       return _exception;
     }
